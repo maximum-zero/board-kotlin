@@ -1,6 +1,6 @@
-name: board-practice
+name: board pratice
 
-env: 
+env:
   AWS_REGION: ap-northeast-2
 
 on:
@@ -24,13 +24,13 @@ jobs:
         distribution: 'zulu'
 
     - name: Build with Gradle
-      run: ./gradlew clean build
+      run: ./gradlew clean build -x test
 
     - name: Get current time
       uses: 1466587594/get-current-time@v2
       id: current-time
       with:
-        format: YYYY-MM-DDTHH-mmss
+        format: YYYY-MM-DDTHH-mm-ss
         utcOffset: "+09:00"
 
     - name: Generate deployment package
@@ -47,7 +47,6 @@ jobs:
         region: ${{ env.AWS_REGION }}
         application_name: board-kotlin
         environment_name: Board-kotlin-env
-        version_label: github-action-${{ steps.current-time.outputs.formattedTime }}
+        version_label: github-action-${{steps.current-time.outputs.formattedTime}}
         deployment_package: deploy/deploy.zip
-
 
