@@ -45,8 +45,8 @@ jobs:
         aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         region: ${{ env.AWS_REGION }}
-        application_name: board-kotlin
-        environment_name: Board-kotlin-env
+        application_name: board-practice
+        environment_name: Board-practice-env
         version_label: github-action-${{ steps.current-time.outputs.formattedTime }}
         deployment_package: deploy/deploy.zip
 
