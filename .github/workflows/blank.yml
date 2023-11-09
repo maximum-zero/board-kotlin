@@ -1,6 +1,6 @@
-name: board-practice
+name: board pratice
 
-env: 
+env:
   AWS_REGION: ap-northeast-2
 
 on:
@@ -30,7 +30,7 @@ jobs:
       uses: 1466587594/get-current-time@v2
       id: current-time
       with:
-        format: YYYY-MM-DDTHH-mmss
+        format: YYYY-MM-DDTHH-mm-ss
         utcOffset: "+09:00"
 
     - name: Generate deployment package
