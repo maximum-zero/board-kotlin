@@ -21,7 +21,7 @@ import java.time.LocalDateTime
 
 @RestController
 class PostController(
-    private val postService: PostService,
+    private val postService: PostService
 ) {
 
     @GetMapping("/posts")

@@ -18,20 +18,20 @@ import org.springframework.data.repository.findByIdOrNull
 @SpringBootTest
 class PostServiceTest(
     private val postService: PostService,
-    private val postRepository: PostRepository,
-): BehaviorSpec({
+    private val postRepository: PostRepository
+) : BehaviorSpec({
     given("게시글 생성시") {
         When("게시글 인풋이 정상적으로 들어오면") {
             val postId = postService.createPost(
                 PostCreatedRequestDto(
-                title = "제목",
-                content = "내용",
-                createdBy = "maximum0"
-            )
+                    title = "제목",
+                    content = "내용",
+                    createdBy = "maximum0"
+                )
             )
 
             then("게시물이 정상적으로 생성됨을 확인한다.") {
-                postId shouldBeGreaterThan  0L
+                postId shouldBeGreaterThan 0L
                 val post = postRepository.findByIdOrNull(postId)
                 post shouldNotBe null
                 post?.title shouldBe "제목"
@@ -45,11 +45,14 @@ class PostServiceTest(
         val saved = postRepository.save(Post(title = "title", content = "content", createdBy = "maximum0"))
 
         When("정상 수정시") {
-            val updatedId = postService.updatePost(saved.id, PostUpdatedRequestDto(
-                title = "update title",
-                content = "update content",
-                updatedBy = "maximum0"
-            ))
+            val updatedId = postService.updatePost(
+                saved.id,
+                PostUpdatedRequestDto(
+                    title = "update title",
+                    content = "update content",
+                    updatedBy = "maximum0"
+                )
+            )
 
             then("게시글이 정상적으로 수정됨을 확인한다.") {
                 saved.id shouldBe updatedId
@@ -63,11 +66,14 @@ class PostServiceTest(
         When("게시글이 없을 떄") {
             then("게시글을 찾을 수 없다라는 예외가 발생한다.") {
                 shouldThrow<PostNotFoundException> {
-                    postService.updatePost(9999L, PostUpdatedRequestDto(
-                        title = "update title",
-                        content = "update content",
-                        updatedBy = "update maximum0"
-                    ))
+                    postService.updatePost(
+                        9999L,
+                        PostUpdatedRequestDto(
+                            title = "update title",
+                            content = "update content",
+                            updatedBy = "update maximum0"
+                        )
+                    )
                 }
             }
         }
@@ -75,11 +81,14 @@ class PostServiceTest(
         When("작성자가 동일하지 않으면") {
             then("수정할 수 없는 게시물 입니다라는 예외가 발생한다.") {
                 shouldThrow<PostNotUpdatableException> {
-                    postService.updatePost(1L, PostUpdatedRequestDto(
-                        title = "update title",
-                        content = "update content",
-                        updatedBy = "update maximum0"
-                    ))
+                    postService.updatePost(
+                        1L,
+                        PostUpdatedRequestDto(
+                            title = "update title",
+                            content = "update content",
+                            updatedBy = "update maximum0"
+                        )
+                    )
                 }
             }
         }
