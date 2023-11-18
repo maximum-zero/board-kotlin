@@ -5,6 +5,8 @@ import com.maximum0.board.controller.dto.PostDetailResponse
 import com.maximum0.board.controller.dto.PostSearchRequest
 import com.maximum0.board.controller.dto.PostSummaryResponse
 import com.maximum0.board.controller.dto.PostUpdatedRequest
+import com.maximum0.board.controller.dto.toDto
+import com.maximum0.board.service.PostService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -18,7 +20,9 @@ import org.springframework.web.bind.annotation.RestController
 import java.time.LocalDateTime
 
 @RestController
-class PostController {
+class PostController(
+    private val postService: PostService,
+) {
 
     @GetMapping("/posts")
     fun getPosts(
@@ -39,7 +43,7 @@ class PostController {
     fun createPost(
         @RequestBody postCreatedRequest: PostCreatedRequest
     ): Long {
-        return 1L
+        return postService.createPost(postCreatedRequest.toDto())
     }
 
     @PutMapping("/posts/{id}")
@@ -47,7 +51,7 @@ class PostController {
         @PathVariable id: Long,
         @RequestBody postUpdatedRequest: PostUpdatedRequest
     ): Long {
-        return 1L
+        return postService.updatePost(id, postUpdatedRequest.toDto())
     }
 
     @DeleteMapping("/posts/{id}")
@@ -55,6 +59,6 @@ class PostController {
         @PathVariable id: Long,
         @RequestParam createdBy: String
     ): Long {
-        return 1L
+        return postService.deletePost(id, createdBy)
     }
 }
