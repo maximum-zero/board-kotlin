@@ -1,5 +1,7 @@
 package com.maximum0.board.domain
 
+import com.maximum0.board.exception.CommentNotUpdatableException
+import com.maximum0.board.service.dto.CommentUpdateRequestDto
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
@@ -23,4 +25,13 @@ class Comment(
     @ManyToOne(fetch = FetchType.LAZY)
     var post: Post = post
         protected set
+
+    fun update(updateRequestDto: CommentUpdateRequestDto) {
+        if (updateRequestDto.updatedBy != this.createdBy) {
+            throw CommentNotUpdatableException()
+        }
+
+        this.content = updateRequestDto.content
+        super.update(updateRequestDto.updatedBy)
+    }
 }
