@@ -145,7 +145,7 @@ class PostServiceTest(
             println(saved.id)
             val post: PostDetailResponseDto = postService.getPost(saved.id)
             then("게시글이 정상적으로 조회됨을 확인한다.") {
-                post.id shouldNotBe saved.id
+                post.id shouldBe saved.id
                 post.title shouldBe "제목"
                 post.content shouldBe "내용"
                 post.createdBy shouldBe "maximum0"
