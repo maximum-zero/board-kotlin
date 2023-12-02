@@ -2,6 +2,7 @@ package com.maximum0.board.service
 
 import com.maximum0.board.domain.Comment
 import com.maximum0.board.domain.Post
+import com.maximum0.board.domain.Tag
 import com.maximum0.board.exception.PostNotDeletableException
 import com.maximum0.board.exception.PostNotFoundException
 import com.maximum0.board.exception.PostNotUpdatableException
@@ -33,16 +34,16 @@ class PostServiceTest(
     beforeSpec {
         postRepository.saveAll(
             listOf(
-                Post(title = "제목1", content = "내용1", createdBy = "maximum1"),
-                Post(title = "제목2", content = "내용2", createdBy = "maximum1"),
-                Post(title = "제목3", content = "내용3", createdBy = "maximum1"),
-                Post(title = "제목4", content = "내용4", createdBy = "maximum1"),
-                Post(title = "제목5", content = "내용5", createdBy = "maximum1"),
-                Post(title = "제목6", content = "내용6", createdBy = "maximum0"),
-                Post(title = "제목7", content = "내용7", createdBy = "maximum0"),
-                Post(title = "제목8", content = "내용8", createdBy = "maximum0"),
-                Post(title = "제목9", content = "내용9", createdBy = "maximum0"),
-                Post(title = "제목10", content = "내용10", createdBy = "maximum0")
+                Post(title = "제목1", content = "내용1", createdBy = "maximum1", tags = listOf("tag1", "tag2")),
+                Post(title = "제목2", content = "내용2", createdBy = "maximum1", tags = listOf("tag1", "tag2")),
+                Post(title = "제목3", content = "내용3", createdBy = "maximum1", tags = listOf("tag1", "tag2")),
+                Post(title = "제목4", content = "내용4", createdBy = "maximum1", tags = listOf("tag1", "tag2")),
+                Post(title = "제목5", content = "내용5", createdBy = "maximum1", tags = listOf("tag1", "tag2")),
+                Post(title = "제목6", content = "내용6", createdBy = "maximum0", tags = listOf("tag1", "tag5")),
+                Post(title = "제목7", content = "내용7", createdBy = "maximum0", tags = listOf("tag1", "tag5")),
+                Post(title = "제목8", content = "내용8", createdBy = "maximum0", tags = listOf("tag1", "tag5")),
+                Post(title = "제목9", content = "내용9", createdBy = "maximum0", tags = listOf("tag1", "tag5")),
+                Post(title = "제목10", content = "내용10", createdBy = "maximum0", tags = listOf("tag1", "tag5"))
             )
         )
     }
@@ -194,14 +195,28 @@ class PostServiceTest(
 
     given("게시글 상세 조회 시") {
         val saved = postRepository.save(Post(title = "제목", content = "내용", createdBy = "maximum0"))
+        tagRepository.saveAll(
+            listOf(
+                Tag(name = "tag1", post = saved, createdBy = "maximum0"),
+                Tag(name = "tag2", post = saved, createdBy = "maximum0"),
+                Tag(name = "tag3", post = saved, createdBy = "maximum0")
+            )
+        )
+
         When("정상 조회 시") {
-            println(saved.id)
             val post: PostDetailResponseDto = postService.getPost(saved.id)
             then("게시글이 정상적으로 조회됨을 확인한다.") {
                 post.id shouldBe saved.id
                 post.title shouldBe "제목"
                 post.content shouldBe "내용"
                 post.createdBy shouldBe "maximum0"
+            }
+
+            When("태그가 정상적으로 조회됨을 확인한다.") {
+                post.tags.size shouldBe 3
+                post.tags[0] shouldBe "tag1"
+                post.tags[1] shouldBe "tag2"
+                post.tags[2] shouldBe "tag3"
             }
         }
 
@@ -263,6 +278,26 @@ class PostServiceTest(
                 postPage.content.size shouldBeLessThanOrEqual 5
                 postPage.content[0].title shouldContain "제목"
                 postPage.content[0].createdBy shouldContain "maximum"
+            }
+
+            then("첫번째 태그가 함께 조회됨을 확인한다.") {
+                postPage.content.forEach {
+                    it.firstTag shouldBe "tag1"
+                }
+            }
+        }
+
+        When("태그로 검색") {
+            val postPage = postService.findPageBy(PageRequest.of(0, 5), PostSearchRequestDto(tag = "tag5"))
+            then("태그에 해당하는 게시글이 반환된다.") {
+                postPage.number shouldBe 0
+                postPage.size shouldBe 5
+                postPage.content.size shouldBe 5
+                postPage.content[0].title shouldBe "제목10"
+                postPage.content[1].title shouldBe "제목9"
+                postPage.content[2].title shouldBe "제목8"
+                postPage.content[3].title shouldBe "제목7"
+                postPage.content[4].title shouldBe "제목6"
             }
         }
     }
