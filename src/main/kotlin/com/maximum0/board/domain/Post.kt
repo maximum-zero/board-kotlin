@@ -41,6 +41,14 @@ class Post(
 
         this.title = request.title
         this.content = request.content
+        replaceTag(request.tags)
         super.updatedBy = request.updatedBy
+    }
+
+    private fun replaceTag(tags: List<String>) {
+        if (this.tags.map { it.name } != tags) {
+            this.tags.clear()
+            this.tags.addAll(tags.map { Tag(it, this, this.createdBy) })
+        }
     }
 }

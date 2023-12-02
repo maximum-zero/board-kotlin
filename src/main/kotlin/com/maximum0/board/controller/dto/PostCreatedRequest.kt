@@ -12,5 +12,6 @@ data class PostCreatedRequest(
 fun PostCreatedRequest.toDto() = PostCreatedRequestDto(
     title = title,
     content = content,
-    createdBy = createdBy
+    createdBy = createdBy,
+    tags = tags
 )
