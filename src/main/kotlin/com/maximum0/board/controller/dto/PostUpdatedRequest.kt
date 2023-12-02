@@ -5,7 +5,8 @@ import com.maximum0.board.service.dto.PostUpdatedRequestDto
 data class PostUpdatedRequest(
     val title: String,
     val content: String,
-    val updatedBy: String
+    val updatedBy: String,
+    val tags: List<String> = emptyList()
 )
 
 fun PostUpdatedRequest.toDto() = PostUpdatedRequestDto(
