@@ -1,0 +1,7 @@
+### 좋아요 생성
+POST localhost:8080/posts/1/likes?createdBy=maximum0
+Content-Type: application/json
+
+{
+
+}
