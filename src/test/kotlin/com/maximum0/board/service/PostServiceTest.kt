@@ -29,7 +29,9 @@ class PostServiceTest(
     private val postService: PostService,
     private val postRepository: PostRepository,
     private val commentRepository: CommentRepository,
-    private val tagRepository: TagRepository
+    private val tagRepository: TagRepository,
+    private val likeService: LikeService
+
 ) : BehaviorSpec({
     beforeSpec {
         postRepository.saveAll(
@@ -203,6 +205,10 @@ class PostServiceTest(
             )
         )
 
+        likeService.createLike(saved.id, "maximum0")
+        likeService.createLike(saved.id, "maximum1")
+        likeService.createLike(saved.id, "maximum2")
+
         When("정상 조회 시") {
             val post: PostDetailResponseDto = postService.getPost(saved.id)
             then("게시글이 정상적으로 조회됨을 확인한다.") {
@@ -212,11 +218,15 @@ class PostServiceTest(
                 post.createdBy shouldBe "maximum0"
             }
 
-            When("태그가 정상적으로 조회됨을 확인한다.") {
+            then("태그가 정상적으로 조회됨을 확인한다.") {
                 post.tags.size shouldBe 3
                 post.tags[0] shouldBe "tag1"
                 post.tags[1] shouldBe "tag2"
                 post.tags[2] shouldBe "tag3"
+            }
+
+            then("좋아요 개수가 조회됨을 확인한다.") {
+                post.likeCount shouldBe 3
             }
         }
 
@@ -298,6 +308,20 @@ class PostServiceTest(
                 postPage.content[2].title shouldBe "제목8"
                 postPage.content[3].title shouldBe "제목7"
                 postPage.content[4].title shouldBe "제목6"
+            }
+        }
+        When("좋아요가 2개 추가되었을 때") {
+            val postPage = postService.findPageBy(PageRequest.of(0, 5), PostSearchRequestDto(tag = "tag5"))
+            postPage.content.forEach {
+                likeService.createLike(it.id, "maximum0")
+                likeService.createLike(it.id, "maximum1")
+            }
+
+            val likedPostPage = postService.findPageBy(PageRequest.of(0, 5), PostSearchRequestDto(tag = "tag5"))
+            then("좋아요 개수가 정상적으로 조회됨을 확인한다.") {
+                likedPostPage.content.forEach {
+                    it.likeCount shouldBe 2
+                }
             }
         }
     }
