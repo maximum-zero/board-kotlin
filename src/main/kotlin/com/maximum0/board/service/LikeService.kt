@@ -14,6 +14,7 @@ class LikeService(
     private val likeRepository: LikeRepository,
     private val postRepository: PostRepository
 ) {
+    @Transactional
     fun createLike(postId: Long, createdBy: String): Long {
         val post = postRepository.findByIdOrNull(postId) ?: throw PostNotFoundException()
         return likeRepository.save(Like(post, createdBy)).id

@@ -4,6 +4,7 @@ import com.maximum0.board.domain.Post
 import com.maximum0.board.exception.PostNotDeletableException
 import com.maximum0.board.exception.PostNotFoundException
 import com.maximum0.board.repository.PostRepository
+import com.maximum0.board.repository.TagRepository
 import com.maximum0.board.service.dto.PostCreatedRequestDto
 import com.maximum0.board.service.dto.PostDetailResponseDto
 import com.maximum0.board.service.dto.PostSearchRequestDto
@@ -22,7 +23,8 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional(readOnly = true)
 class PostService(
     private val postRepository: PostRepository,
-    private val likeService: LikeService
+    private val likeService: LikeService,
+    private val tagRepository: TagRepository
 ) {
     @Transactional
     fun createPost(request: PostCreatedRequestDto): Long {
@@ -52,6 +54,9 @@ class PostService(
     }
 
     fun findPageBy(pageRequest: Pageable, postSearchRequestDto: PostSearchRequestDto): Page<PostSummaryResponseDto> {
+        postSearchRequestDto.tag?.let {
+            tagRepository.findPageBy(pageRequest, it).toSummaryResponseDto(likeService::countLike)
+        }
         return postRepository.findPageBy(pageRequest, postSearchRequestDto)
             .toSummaryResponseDto(likeService::countLike)
     }
